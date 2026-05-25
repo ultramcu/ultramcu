@@ -1,6 +1,10 @@
 ```text
 $ ./ultramcu --boot
-[0.000] ULTRA·MCU ▸ MCS-51 @ 11.0592 MHz ▸ power-on reset OK
+[0.000] ULTRA·MCU ▸ power-on reset OK
+[0.001] cpu: P89C51 ▸ 8051 core @ 11.0592 MHz
+[0.002] uart0 ▸ 9600 8N1 ▸ console up (exact baud from the xtal)
+[0.003] hm6264 ▸ 8K×8 SRAM ▸ XRAM mapped
+[0.004] 8255 PPI ▸ ports A/B/C ▸ 24 GPIO up
 [ OK ] insmod c.ko ............. close to the metal
 [ OK ] insmod mcu.ko ........... bare-metal native (it's in the name)
 [ OK ] insmod go.ko ............ ships tested libs on pkg.go.dev

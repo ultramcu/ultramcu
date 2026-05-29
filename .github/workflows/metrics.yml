@@ -1,0 +1,63 @@
+# .github/workflows/metrics.yml
+#
+# Renders ultramcu's language breakdown into metrics.svg and commits it back
+# to this repo (the profile repo). The README references metrics.svg.
+#
+# One-time setup:
+#   1. Personal Access Token (classic) at https://github.com/settings/tokens
+#      scopes: repo, read:user, read:org
+#      -> save as repo secret named METRICS_TOKEN
+#   2. Enable Actions: Settings -> Actions -> General -> Allow all actions
+#   3. Allow workflow write access: Settings -> Actions -> General ->
+#      Workflow permissions -> "Read and write permissions"
+#
+# Updates every 6 hours + on manual dispatch.
+
+name: Metrics
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/metrics.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  languages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate languages metrics
+        uses: lowlighter/metrics@latest
+        with:
+          token: ${{ secrets.METRICS_TOKEN }}
+          user: ultramcu
+          filename: metrics.svg
+          template: classic
+          config_timezone: Asia/Bangkok
+
+          # Minimal header (avatar + name + counters). Set to "" to hide
+          # entirely if you want a pure language ring with no header.
+          base: header
+          base_indepth: no
+
+          # Languages plugin — both rings side by side:
+          #   most-used    = all-time bytes across all owned + contributed repos
+          #   recently-used = languages touched in the last N days of commits
+          plugin_languages: yes
+          plugin_languages_sections: most-used, recently-used
+          plugin_languages_details: bytes-size, percentage
+          plugin_languages_indepth: yes          # scan commits, not just repo lang stats
+          plugin_languages_recent_categories: programming, markup
+          plugin_languages_recent_days: 60
+          plugin_languages_recent_load: 300
+          plugin_languages_analysis_timeout: 30
+          plugin_languages_analysis_timeout_repositories: 15
+
+          # Trim out languages that aren't really "what you build in":
+          plugin_languages_ignored: >-
+            html, css, scss, less, makefile, dockerfile, yaml, yml, json,
+            markdown, tex, vim-script, batchfile, m4, awk, sed, smarty,
+            jinja, vue, svelte, jupyter-notebook, mermaid, gnuplot
